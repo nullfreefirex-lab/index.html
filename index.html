@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Desvia dos Blocos</title>
+</head>
+<body style="margin:0; overflow:hidden; background:black; touch-action:none;">
+<canvas id="game"></canvas>
+
+<div style="position:fixed; bottom:80px; width:100%; text-align:center;">
+  <button onclick="moveLeft()" style="font-size:40px; padding:15px 30px; margin:10px;">ESQUERDA</button>
+  <button onclick="moveRight()" style="font-size:40px; padding:15px 30px; margin:10px;">DIREITA</button>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let player = {
+  x: canvas.width / 2,
+  y: canvas.height - 80,
+  size: 30,
+  speed: 20
+};
+
+let blocks = [];
+let score = 0;
+
+function moveLeft() {
+  player.x -= player.speed;
+}
+
+function moveRight() {
+  player.x += player.speed;
+}
+
+function spawnBlock() {
+  blocks.push({
+    x: Math.random() * canvas.width,
+    y: -20,
+    size: 20,
+    speed: 3 + Math.random() * 3
+  });
+}
+
+function update() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "lime";
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+
+  ctx.fillStyle = "red";
+  for (let i = 0; i < blocks.length; i++) {
+    let b = blocks[i];
+    b.y += b.speed;
+
+    ctx.fillRect(b.x, b.y, b.size, b.size);
+
+    if (
+      player.x < b.x + b.size &&
+      player.x + player.size > b.x &&
+      player.y < b.y + b.size &&
+      player.y + player.size > b.y
+    ) {
+      alert("Game Over! Pontos: " + score);
+      document.location.reload();
+    }
+  }
+
+  score++;
+  ctx.fillStyle = "white";
+  ctx.fillText("Pontos: " + score, 10, 20);
+
+  requestAnimationFrame(update);
+}
+
+setInterval(spawnBlock, 800);
+update();
+</script>
+</body>
+</html>
